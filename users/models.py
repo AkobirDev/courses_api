@@ -6,6 +6,6 @@ from phonenumber_field.modelfields import PhoneNumberField
 class CustomUser(AbstractUser):
     avatar = models.ImageField(default='anonimous.png')
     bio = models.TextField()
-    phone_number = PhoneNumberField(_("phone number"), blank=True)
+    phone_number = PhoneNumberField(blank=True)
     is_teacher = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
