@@ -37,9 +37,9 @@ class Category(models.Model):
 
 class Course(models.Model):
     title = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    slug = models.SlugField(blank=True, unique=True)
-    thumbnail = models.ImageField(upload_to='course-images', blank=True, null=True)
+    thumbnail = models.ImageField(upload_to='course-images', blank=True)
     description = models.TextField()
     price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     discount = models.IntegerField(
@@ -50,9 +50,7 @@ class Course(models.Model):
     instructor = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-
     @property
-    
     def is_free(self):
         return not self.price
     
@@ -65,11 +63,6 @@ class Course(models.Model):
     def __str__(self):
         return self.title  
     
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.title)
-        return super().save(*args, **kwargs)
-        
 
 class CourseSection(models.Model):
     title = models.CharField(max_length=255)
@@ -91,7 +84,7 @@ class Lesson(models.Model):
     description = models.TextField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons')
     section = models.ForeignKey(CourseSection, on_delete=models.CASCADE)
-    video = models.URLField()
+    video = models.URLField(unique=True)
     duration = models.PositiveIntegerField(help_text='Duration the lessons must be in minutes')
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)

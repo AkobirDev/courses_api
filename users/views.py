@@ -13,16 +13,16 @@ User = get_user_model()
 
 
 class UserView(viewsets.ViewSet):
-    def list(self):
-        user = User.objects.all()
-        serializer = UserSerializer(user, many=True)
+    
+    def list(self, request):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
     
     def retrieve(self, request, pk):
         user = User.objects.get(pk=pk)
         serializer = UserSerializer(user)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-        
+        return Response(data=serializer.data, status=status.HTTP_200_OK)    
     
     def create(self, request):
         serializer = UserSerializer(data=request.data)

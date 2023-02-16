@@ -8,9 +8,10 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CourseSerializer(serializers.ModelSerializer):
+    category = CategorySerializer()
     class Meta:
         model = Course
-        fields = ('title', 'category', 'slug', 'thumbnail', 'description',
+        fields = ('id', 'title', 'category', 'slug', 'thumbnail', 'description',
                    'price', 'discount', 'level', 'language', 'instructor',
                   'is_free', 'get_price', 'created_at')
 
