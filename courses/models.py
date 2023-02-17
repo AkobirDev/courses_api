@@ -51,6 +51,11 @@ class Course(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
+
+    def get_course_avg_rating(self):
+        section_ratings = [section.get_section_avg_rating for section in self.sections.all() if section.get_section_avg_rating is not None]
+        return round((sum(section_ratings)/len(section_ratings) if len(section_ratings) else 0 ), 2)   
+
     def is_free(self):
         return not self.price
     
@@ -67,10 +72,15 @@ class Course(models.Model):
 class CourseSection(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='sections')
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)   
 
+    @property
+    def get_section_avg_rating(self):
+        lesson_ratings = [lesson.get_lesson_average_rating for lesson in self.lessons.all() if lesson.get_lesson_average_rating is not None]    
+        return round((sum(lesson_ratings)/len(lesson_ratings) if len(lesson_ratings) else 0 ), 2)
+     
     def __str__(self):
         return self.title
     
@@ -82,13 +92,18 @@ class Lesson(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     description = models.TextField()
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons')
-    section = models.ForeignKey(CourseSection, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    section = models.ForeignKey(CourseSection, on_delete=models.CASCADE, related_name='lessons')
     video = models.URLField(unique=True)
     duration = models.PositiveIntegerField(help_text='Duration the lessons must be in minutes')
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def get_lesson_average_rating(self):
+        return round((self.reviews.aggregate(models.Avg('rating'))['rating__avg'] or 0 ) ,2)
+        # return self.reviews.aggregate(models.Avg('rating'))['rating_avg']
+    
     def __str__(self):
         return self.title
     
@@ -124,5 +139,5 @@ class Reviews(models.Model):
         unique_together = ('user', 'lesson')
     
     def __str__(self):
-        return f'{self.rating} to {self.lesson}'
+        return f'{self.rating} to {self.lesson} by {self.user}'
     
