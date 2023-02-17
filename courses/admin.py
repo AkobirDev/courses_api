@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from courses.models import Category, Course, CourseSection, Enrollment, Lesson
+from courses.models import Category, Course, CourseSection, Enrollment, Lesson, Reviews
 
 # Register your models here.
 admin.site.register(Category)
@@ -21,3 +21,8 @@ class LessonAdmin(admin.ModelAdmin):
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
     list_display = ('user', 'course')
+
+
+@admin.register(Reviews)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('rating', 'user', 'lesson')

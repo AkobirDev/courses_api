@@ -30,4 +30,6 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         model = Enrollment
         fields = '__all__'
 
-        
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'

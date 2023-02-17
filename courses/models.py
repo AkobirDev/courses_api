@@ -108,3 +108,21 @@ class Enrollment(models.Model):
 
     def __str__(self):
         return f'{self.user} --> {self.course}'
+    
+
+class Reviews(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='course_reviews')
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'lesson')
+    
+    def __str__(self):
+        return f'{self.rating} to {self.lesson}'
+    

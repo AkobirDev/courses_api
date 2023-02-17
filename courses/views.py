@@ -5,10 +5,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
-from courses.models import Category, Course, CourseSection, Lesson
+from courses.models import Category, Course, CourseSection, Lesson, Reviews
 from courses.permissions import IsUser, ReadOnly
-from courses.serializers import CategorySerializer, CourseSectionSerializer, CourseSerializer, LessonSerializer
-
+from courses.serializers import CategorySerializer, CourseSectionSerializer, CourseSerializer, LessonSerializer, ReviewSerializer
 
 class CategoryView(ListAPIView):
     queryset = Category.objects.all()
@@ -60,10 +59,19 @@ class LessonView(APIView):
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-    # def get(self, request, id, *args, **kwargs):
-    #     c = Category.objects.get(id=id)
-    #     queryset = Course.objects.filter(category=c)
-    #     serializer = CourseSerializer(queryset)
-
-    #     return Response(data=serializer.data, status=status.HTTP_200_OK)
-
+class ReviewsView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        queryset = Reviews.objects.all()
+        serializer = ReviewSerializer(queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        serializer = ReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+        
