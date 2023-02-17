@@ -51,10 +51,19 @@ class Course(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
-
     def get_course_avg_rating(self):
         section_ratings = [section.get_section_avg_rating for section in self.sections.all() if section.get_section_avg_rating is not None]
         return round((sum(section_ratings)/len(section_ratings) if len(section_ratings) else 0 ), 2)   
+    
+    @property
+    def get_course_length(self):
+        length = [section.get_section_length for section in self.sections.all()]
+        return sum(length)
+    
+    @property
+    def get_total_lectures(self):
+        l = [ls.get_lectures_num for ls in self.sections.all()]
+        return sum(l)
 
     def is_free(self):
         return not self.price
@@ -80,7 +89,18 @@ class CourseSection(models.Model):
     def get_section_avg_rating(self):
         lesson_ratings = [lesson.get_lesson_average_rating for lesson in self.lessons.all() if lesson.get_lesson_average_rating is not None]    
         return round((sum(lesson_ratings)/len(lesson_ratings) if len(lesson_ratings) else 0 ), 2)
-     
+    
+    @property
+    def get_section_length(self):
+        length = [lesson.duration for lesson in self.lessons.all()]
+        return sum(length)
+    
+    @property
+    def get_lectures_num(self):
+        l = [lesson for lesson in self.lessons.all()]
+        return len(l)
+
+
     def __str__(self):
         return self.title
     

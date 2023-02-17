@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from courses.models import Category, Course, CourseSection, Enrollment, Lesson
+from courses.models import Category, Course, CourseSection, Enrollment, Lesson, Reviews
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,14 +12,14 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ('id', 'title', 'category', 'slug', 'thumbnail', 'description',
-                   'price', 'discount', 'level', 'language', 'instructor',
-                    'get_course_avg_rating', 'is_free', 'get_price', 'created_at')
+                   'price', 'discount', 'level', 'language', 'instructor', 'get_course_length',
+                    'get_total_lectures', 'get_course_avg_rating', 'is_free', 'get_price', 'created_at')
 
 class CourseSectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseSection
-        fields = ('id', 'title', 'description', 'order',
-                   'course', 'get_section_avg_rating', 'created_at')
+        fields = ('id', 'title', 'description', 'order', 'get_section_length',
+                 'get_lectures_num', 'course', 'get_section_avg_rating', 'created_at')
 
 class LessonSerializer(serializers.ModelSerializer):
     reviews = serializers.StringRelatedField(many=True)
@@ -35,4 +35,5 @@ class EnrollmentSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
+        model = Reviews
         fields = '__all__'
