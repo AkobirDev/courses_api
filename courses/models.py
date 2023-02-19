@@ -28,6 +28,9 @@ class Category(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def get_courses(self):
+        return [course.title for course in self.courses.all()]
+
     def __str__(self):
         return self.title
 
@@ -38,7 +41,7 @@ class Category(models.Model):
 class Course(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='courses')
     thumbnail = models.ImageField(upload_to='course-images', blank=True)
     description = models.TextField()
     price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
@@ -50,20 +53,20 @@ class Course(models.Model):
     instructor = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    @property
     def get_course_avg_rating(self):
-        section_ratings = [section.get_section_avg_rating for section in self.sections.all() if section.get_section_avg_rating is not None]
+        section_ratings = [section.get_section_avg_rating() for section in self.sections.all() if section.get_section_avg_rating() is not None]
         return round((sum(section_ratings)/len(section_ratings) if len(section_ratings) else 0 ), 2)   
     
-    @property
     def get_course_length(self):
-        length = [section.get_section_length for section in self.sections.all()]
+        length = [section.get_section_length() for section in self.sections.all()]
         return sum(length)
     
-    @property
     def get_total_lectures(self):
-        l = [ls.get_lectures_num for ls in self.sections.all()]
+        l = [ls.get_lectures_num() for ls in self.sections.all()]
         return sum(l)
+
+    def get_enrolled_students(self):
+        return [e.user.username for e in self.get_course.all()]
 
     def is_free(self):
         return not self.price
@@ -85,17 +88,17 @@ class CourseSection(models.Model):
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)   
 
-    @property
+  
     def get_section_avg_rating(self):
-        lesson_ratings = [lesson.get_lesson_average_rating for lesson in self.lessons.all() if lesson.get_lesson_average_rating is not None]    
+        lesson_ratings = [lesson.get_lesson_average_rating() for lesson in self.lessons.all() if lesson.get_lesson_average_rating() is not None]    
         return round((sum(lesson_ratings)/len(lesson_ratings) if len(lesson_ratings) else 0 ), 2)
     
-    @property
+
     def get_section_length(self):
         length = [lesson.duration for lesson in self.lessons.all()]
         return sum(length)
     
-    @property
+
     def get_lectures_num(self):
         l = [lesson for lesson in self.lessons.all()]
         return len(l)
@@ -119,7 +122,6 @@ class Lesson(models.Model):
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    @property
     def get_lesson_average_rating(self):
         return round((self.reviews.aggregate(models.Avg('rating'))['rating__avg'] or 0 ) ,2)
         # return self.reviews.aggregate(models.Avg('rating'))['rating_avg']
@@ -134,8 +136,8 @@ class Lesson(models.Model):
         
 
 class Enrollment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='paid_course')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='get_course')
     enrolled_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

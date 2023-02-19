@@ -1,4 +1,5 @@
 from django.urls import path, include
+from payment.views import PaymentView
 from rest_framework import routers
 from courses.views import ( 
     CategoryDetailView, 
@@ -26,6 +27,7 @@ urlpatterns = [
     path('courses/<int:course_id>/<int:section_id>/', SectionLessonsView.as_view(), name='section-lessons'),
     path('courses/<int:course_id>/<int:section_id>/<int:lesson_id>', LessonView.as_view(), name='lesson'),
     path('reviews/', ReviewsView.as_view(), name='reviews'),
-    path('reviews/<int:review_id>/', ReviewDetailView.as_view(), name='reviews-detail'),                                
+    path('reviews/<int:review_id>/', ReviewDetailView.as_view(), name='reviews-detail'),     
+    path('payment/', PaymentView.as_view(), name='payment'),                           
 ]
 
