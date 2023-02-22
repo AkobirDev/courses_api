@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Register Page{% endblock title %}
+
+{% block content %}
+<h3>Register</h3>
+<div class="container">
+    <div class="row">
+        <div class="col-4">
+            <form method="post" action="{% url 'users:register' %}">
+                {% csrf_token %}
+                {{ register_form }}
+                <button class='btn btn-primary' type="submit">Saqlash</button>
+                <a class='ms-4' href="{% url 'users:login' %}"> already have account?</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
