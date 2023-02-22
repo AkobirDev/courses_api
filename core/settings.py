@@ -33,7 +33,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'djoser',
     'phonenumber_field',
-    
+    'crispy_forms',
+    'crispy_bootstrap5',
 
     #local
     'api.apps.ApiConfig',
@@ -42,6 +43,11 @@ INSTALLED_APPS = [
     'reviews.apps.ReviewsConfig',
     'payment.apps.PaymentConfig',
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
