@@ -12,4 +12,3 @@ class PaymentView(ListAPIView):
     def get_queryset(self):
         queryset = Payment.objects.filter(user=self.request.user)
         return queryset
-    
