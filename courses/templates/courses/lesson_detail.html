@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Lesson Detail Page{% endblock title %}
+
+{% block content %}
+<h2 class='fs-3 mb-5'>{{lesson.title}}</h2>
+<iframe width="560" height="315" src="{{lesson.video}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<br>
+<small class='d-inline-block mt-5 fst-italic'>{{lesson.description}}</small>
+
+{% endblock content %}

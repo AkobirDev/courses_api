@@ -42,7 +42,7 @@ class Course(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='courses')
-    thumbnail = models.ImageField(upload_to='course-images', blank=True)
+    thumbnail = models.ImageField(upload_to='course-images', default='default.png')
     description = models.TextField()
     price = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     discount = models.IntegerField(
@@ -77,8 +77,13 @@ class Course(models.Model):
         
         return round(self.price * (100 - self.discount) / 100, 2)
 
+
+
     def __str__(self):
-        return self.title  
+        return self.title
+
+    class Meta:
+        ordering = ('-created_at',)  
     
 
 class CourseSection(models.Model):
@@ -102,7 +107,6 @@ class CourseSection(models.Model):
     def get_lectures_num(self):
         l = [lesson for lesson in self.lessons.all()]
         return len(l)
-
 
     def __str__(self):
         return self.title
@@ -133,7 +137,9 @@ class Lesson(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
-        
+    
+    class Meta:
+        ordering = ('id',)
 
 class Enrollment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='paid_course')
@@ -159,6 +165,7 @@ class Reviews(models.Model):
 
     class Meta:
         unique_together = ('user', 'lesson')
+        ordering = ('-created_at', 'rating')
     
     def __str__(self):
         return f'{self.rating} to {self.lesson} by {self.user}'

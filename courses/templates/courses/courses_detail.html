@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Course Detail Page{% endblock title %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-4 me-5">
+            <h2 class="course-title mb-5 fs-1">{{course.title}}</h2>
+            <small class="desc fst-italic">{{course.description}}</small>
+            <div class="d-flex align-items-center">
+                <p class="rating me-4">{{course.get_course_avg_rating}} stars</p>
+                <p class="students">{{course.get_enrolled_students | length}} students</p>
+            </div>
+            <p class='fs-6'>Instructor: {{course.instructor}}</p>
+            <p class='fs-6'>Language: {{course.language}}</p>
+            <div class='price mt-4 d-flex justify-content-space-around align-items-center'>
+                {% if not course.is_free %}
+                <p class="pricing me-3 fs-3">{{course.get_price}}$</p>
+                {% if course.discount %}
+                    <del class='fs-5'>{{course.price}}$</del>
+                    <h4 class="discount ms-3 fs-4">{{course.discount}}% discount</h4>
+                {% endif %}
+                {% else %}
+                <p class="pricing me-3">Free</p>
+            {% endif %}
+            </div>
+        </div>
+        <div class="col-4">
+            <img src="{{course.thumbnail.url}}" alt="" width="220" height="180">
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-12">
+            <p class='my-3 fs-5'>{{course.sections.all | length }} sections > {{course.get_total_lectures}} lectures > {{course.get_course_length}} min</p>
+            <div class="accordion" id="accordionPanelsStayOpenExample">
+                {% for section in course.sections.all %}
+                <div class="accordion-item mt-3">
+                  <h2 class="accordion-header" id="panelsStayOpen-heading{{section.order}}">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse{{section.order}}" aria-expanded="true" aria-controls="panelsStayOpen-collapse{{section.order}}">
+                      <div class="d-flex align-items-center justify-content-between w-100 me-4">
+                        <h4 class='fs-4'>{{section.title}}</h4> 
+                        <p class='fs-6'>{{section.get_lectures_num}} lections  >  {{section.get_section_length}} min</p>
+                      </div>
+                    </button>
+                  </h2>
+                  <div id="panelsStayOpen-collapse{{section.order}}" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-heading{{section.order}}">
+                    <div class="accordion-body">
+                      <ul>
+                        {% for lesson in section.lessons.all %}
+                        <li class='d-inline-block w-100 me-3 p-1'> 
+                          <div class="d-flex align-items-center justify-content-between w-100 me-4">
+                            {% if course.is_free %}
+                            <a href="{% url 'courses:lesson' course.id lesson.id %}" class='fs-5'>{{lesson.title}}</a>
+                            {% else %}
+                            <p href="{% url 'courses:lesson' course.id lesson.id %}" class='fs-5'><i class="bi bi-lock-fill"></i>{{lesson.title}}</p>
+                            {% endif %}
+                    
+                            <p class='fs-6'>{{lesson.duration}} min</p>
+                          </div>
+                            {% comment %} <div class="accordion accordion-flush" id="accordionFlushExample">
+                              <div class="accordion-item mt-3">
+                                <h2 class="accordion-header" id="flush-heading{{section.order}}{{lesson.order}}">
+                                  <div class="d-flex align-items-center justify-content-space-around w-100 me-4">
+                                  <a href="{% url 'courses:lesson' course.id lesson.id %}" class='fs-5'>{{lesson.title}}</a>
+                                  <p class='fs-6'>{{lesson.duration}} min</p>
+                                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{section.order}}{{lesson.order}}" aria-expanded="false" aria-controls="flush-collapse{{section.order}}{{lesson.order}}">
+                                  </button>
+                                </div>
+                                </h2>
+                                <div id="flush-collapse{{section.order}}{{lesson.order}}" class="accordion-collapse collapse" aria-labelledby="flush-heading{{section.order}}{{lesson.order}}" data-bs-parent="#accordionFlushExample">
+                                  <div class="accordion-body">{{lesson.description}}</div>
+                                </div>
+                              </div>
+                           
+                            </div>
+                             {% endcomment %}
+                            </li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+        </div>
+    </div>
+{% endblock content %}

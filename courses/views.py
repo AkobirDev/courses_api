@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views import View
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,6 +9,10 @@ from rest_framework.permissions import IsAuthenticated
 from courses.models import Category, Course, CourseSection, Lesson, Reviews
 from courses.permissions import IsUser, ReadOnly
 from courses.serializers import CategorySerializer, CourseSectionSerializer, CourseSerializer, LessonSerializer, ReviewSerializer
+
+
+#---------------  Views for DRF ---------------------
+
 
 class CategoryView(ListAPIView):
     queryset = Category.objects.all()
@@ -84,4 +89,27 @@ class ReviewDetailView(ListAPIView):
     
     
 
+# -----------------  Views for Django ------------------------
+
+class CourseListView(View):
+    def get(self, request):
+        courses = Course.objects.all().order_by('id')
+        context = {'courses': courses}
+        return render(request, 'courses/courses_list.html', context=context)
         
+
+class CourseDetailView(View):
+    def get(self, request, id):
+        course = Course.objects.get(pk=id)
+        # section = course.sections.get(course=course)
+        # lessons = section.lessons.all().order_by('id')
+        context = {'course': course}
+        return render(request, 'courses/courses_detail.html', context=context)
+    
+
+class LessonDetailView(View):
+    def get(self, request, course_id, lesson_id):
+        course = Course.objects.get(id=course_id)
+        lesson = Lesson.objects.get(id=lesson_id)
+        context = {'course': course, 'lesson': lesson}
+        return render(request, 'courses/lesson_detail.html', context=context)

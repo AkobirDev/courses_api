@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}All Courses{% endblock title %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'courses/css/styles.css' %}">
+
+<h2>Course List</h2>
+<div class="row my-3">
+    <div class="col-4">
+        <form method="get" class="d-flex">
+            <input type="text" class="form-control" placeholder="Search..." name="q" value="{{search_query}}">
+            <button class="btn btn-success ms-2">Search</button>
+        </form>
+    </div>
+</div>
+<div class="row">
+  <div class="col-4">
+
+    {% for course in courses %}
+    <div class="masterclass">
+        <article class="card-masterclass">
+          {% if course.thumbnail %}
+            <img src="{{course.thumbnail.url}}" class="img-mastercover" width="54px">
+          {% endif %}
+            {% comment %} <img src="" width="54px" alt="Play button" class="play-button"> {% endcomment %}
+          </img>
+          <div class="card-text-area">
+            <div class="card-info-top">
+              <p class="students">{{course.get_enrolled_students | length}} students</p>
+              <p class="length">{{course.get_course_length}} min</p>
+            </div>
+            <div class="card-info-mid  mt-4 d-flex align-items-center">
+              <a href="{% url 'courses:course-detail' course.id %}"" class="course-title me-4">{{course.title}}</a>
+              <p>{{course.get_course_avg_rating}} stars</p>
+            </div>
+            <div class="card-info-bottom">
+              <h6 class="instructeur">{{course.instructor}}</h6>
+            <div class='price mt-4 d-flex justify-content-between align-items-center'>
+              {% if not course.is_free %}
+              <p class="pricing me-3">{{course.get_price}}$</p>
+              {% if course.discount %}
+                <span><del>{{course.price}}$</del><span>
+              {% endif %}
+              {% else %}
+              <p class="pricing me-3">Free</p>
+    
+              {% endif %}
+    
+            </div>
+            </div>
+          </div>
+        </article>
+    </div>
+
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock content %}
